@@ -1,0 +1,29 @@
+# Install core dependencies
+npm install mongoose @types/mongoose @types/node
+npm install @clerk/nextjs
+npm install @stripe/stripe-js stripe
+npm install mailgun.js form-data
+npm install @lemonsqueezy/lemonsqueezy.js
+npm install next-themes
+npm install @radix-ui/react-slot class-variance-authority clsx tailwind-merge
+npm install lucide-react
+npm install @radix-ui/react-dialog
+npm install @radix-ui/react-dropdown-menu
+
+# Install development dependencies
+npm install -D @types/node
+
+# Install missing dependencies
+npm install @types/node --save-dev
+npm install stripe @types/stripe
+npm install @lemonsqueezy/lemonsqueezy.js
+npm install paystack-sdk
+npm install mongoose @types/mongoose
+npm install next @types/next
+npm install formdata-node mailgun.js
+
+# Install chart and table dependencies
+npm install @tremor/react recharts @tanstack/react-table
+npm install date-fns # For date formatting
+
+npx create-next-app@latest saas-boilerplate --typescript --tailwind --app --src 
