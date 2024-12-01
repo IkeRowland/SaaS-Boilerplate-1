@@ -3,14 +3,16 @@ import mongoose from 'mongoose';
 import { dbConfig } from './db.config';
 
 declare global {
-
-  let mongoose: {
-    conn: mongoose.Connection | null;
-    promise: Promise<mongoose.Connection> | null;
-  };
+  interface GlobalThis {
+    mongoose: {
+      conn: mongoose.Connection | null;
+      promise: Promise<mongoose.Connection> | null;
+    } | undefined;
+  }
 }
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI!;
+
 if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable');
 }
@@ -22,11 +24,11 @@ if (!cached) {
 }
 
 export async function connectToDatabase() {
-  if (cached.conn) {
+  if (cached?.conn) {
     return cached.conn;
   }
 
-  if (!cached.promise) {
+  if (!cached?.promise) {
     cached.promise = mongoose.connect(MONGODB_URI, dbConfig);
   }
 
