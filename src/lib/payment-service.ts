@@ -1,12 +1,13 @@
-import { PaymentProvider, PriceInfo } from '@/types/payments';
-import { createCheckoutSession } from './stripe';
+import type { PaymentProvider, PriceInfo } from '@/types/payments';
+
 import { createLemonCheckout } from './lemonsqueezy';
 import { createPaystackTransaction } from './paystack';
+import { createCheckoutSession } from './stripe';
 
 export const activeProviders: PaymentProvider[] = [
   { name: 'stripe', active: true },
-  { name: 'lemonsqueezy', active: true },
-  { name: 'paystack', active: true },
+  { name: 'lemonsqueezy', active: false },
+  { name: 'paystack', active: false },
 ];
 
 export async function createPaymentSession({
@@ -50,4 +51,4 @@ export async function createPaymentSession({
     default:
       throw new Error(`Payment provider ${provider} not supported`);
   }
-} 
+}

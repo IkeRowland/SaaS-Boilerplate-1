@@ -1,30 +1,33 @@
 import formData from 'form-data';
 import Mailgun from 'mailgun.js';
-import type { EmailOptions } from '@/types/email';
-import { mailgunConfig, mailgunDomain, defaultFromEmail } from './mailgun.config';
+
+import type { EmailOptions, EmailTemplate } from '@/types/email';
+
+import { defaultFromEmail, mailgunConfig, mailgunDomain } from './mailgun.config';
 
 const mailgun = new Mailgun(formData);
 const mg = mailgun.client(mailgunConfig);
 
+type ProcessedTemplate = {
+  subject: string;
+  html: string;
+  text: string;
+};
+
 export class EmailService {
   private static instance: EmailService;
-  private templates: Map<string, EmailOptions>;
+  private templates: Map<string, EmailTemplate>;
 
   private constructor() {
     this.templates = new Map();
     this.initializeTemplates();
   }
 
-  public static getInstance(): EmailService {
-    if (!EmailService.instance) {
-      EmailService.instance = new EmailService();
-    }
-    return EmailService.instance;
-  }
-
   private initializeTemplates() {
     // Welcome email template
     this.templates.set('welcome', {
+      id: 'welcome',
+      name: 'Welcome Email',
       subject: 'Welcome to {{appName}}!',
       html: `
         <h1>Welcome to {{appName}}!</h1>
@@ -46,6 +49,8 @@ export class EmailService {
 
     // Password reset template
     this.templates.set('password-reset', {
+      id: 'password-reset',
+      name: 'Password Reset',
       subject: 'Reset your password',
       html: `
         <h1>Password Reset Request</h1>
@@ -72,15 +77,13 @@ export class EmailService {
   }
 
   private replaceTemplateVars(content: string, vars: Record<string, unknown>): string {
-    return content.replace(/\{\{(\w+)\}\}/g, (match, key) => 
-      String(vars[key] || match)
-    );
+    return content.replace(/\{\{(\w+)\}\}/g, (match, key) => String(vars[key] || match));
   }
 
   private async processTemplate(
     templateId: string,
-    vars: Record<string, unknown>
-  ): Promise<{ subject: string; html: string; text: string }> {
+    vars: Record<string, unknown>,
+  ): Promise<ProcessedTemplate> {
     const template = this.templates.get(templateId);
     if (!template) {
       throw new Error(`Template ${templateId} not found`);
@@ -88,9 +91,16 @@ export class EmailService {
 
     return {
       subject: this.replaceTemplateVars(template.subject, vars),
-      html: this.replaceTemplateVars(template.html || '', vars),
-      text: this.replaceTemplateVars(template.text || '', vars),
+      html: this.replaceTemplateVars(template.html, vars),
+      text: this.replaceTemplateVars(template.text, vars),
     };
+  }
+
+  public static getInstance(): EmailService {
+    if (!EmailService.instance) {
+      EmailService.instance = new EmailService();
+    }
+    return EmailService.instance;
   }
 
   public async sendEmail(options: EmailOptions): Promise<boolean> {
@@ -103,11 +113,10 @@ export class EmailService {
         text: options.text,
       };
 
-      // If template is specified, process it
       if (options.template) {
         const processed = await this.processTemplate(
           options.template,
-          options.templateVars || {}
+          options.templateVars || {},
         );
         messageData = {
           ...messageData,
@@ -115,7 +124,6 @@ export class EmailService {
         };
       }
 
-      // Send email using Mailgun
       await mg.messages.create(mailgunDomain, {
         ...messageData,
         attachments: options.attachments,
@@ -129,5 +137,4 @@ export class EmailService {
   }
 }
 
-// Export singleton instance
-export const emailService = EmailService.getInstance(); 
+export const emailService = EmailService.getInstance();

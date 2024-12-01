@@ -1,15 +1,27 @@
 import type { MetadataRoute } from 'next';
 
-import { getBaseUrl } from '@/utils/Helpers';
+import { siteConfig } from '@/config/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    {
-      url: `${getBaseUrl()}/`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.7,
-    },
-    // Add more URLs here
-  ];
+  const routes = [
+    '',
+    '/blog',
+    '/pricing',
+    '/about',
+    '/contact',
+  ].map(route => ({
+    url: `${siteConfig.url}${route}`,
+    lastModified: new Date().toISOString().split('T')[0],
+  }));
+
+  // Add blog posts
+  const posts = [
+    'getting-started',
+    // Add more post slugs...
+  ].map(slug => ({
+    url: `${siteConfig.url}/blog/${slug}`,
+    lastModified: new Date().toISOString().split('T')[0],
+  }));
+
+  return [...routes, ...posts];
 }

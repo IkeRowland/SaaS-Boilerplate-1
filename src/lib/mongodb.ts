@@ -1,45 +1,36 @@
-import mongoose, { Connection } from 'mongoose';
+import type { Connection } from 'mongoose';
+import mongoose from 'mongoose';
 
 declare global {
-  var mongoose: {
+  let mongooseConnection: {
     conn: Connection | null;
     promise: Promise<Connection> | null;
   };
 }
 
-if (!process.env.MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable');
-}
-
-const MONGODB_URI = process.env.MONGODB_URI;
-
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+if (!globalThis.mongooseConnection) {
+  globalThis.mongooseConnection = { conn: null, promise: null };
 }
 
 export async function connectToDatabase(): Promise<Connection> {
-  if (cached.conn) {
-    return cached.conn;
+  if (!process.env.MONGODB_URI) {
+    throw new Error('Please define the MONGODB_URI environment variable');
   }
 
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
+  if (globalThis.mongooseConnection.conn) {
+    return globalThis.mongooseConnection.conn;
+  }
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose.connection;
-    });
+  if (!globalThis.mongooseConnection.promise) {
+    globalThis.mongooseConnection.promise = mongoose.connect(process.env.MONGODB_URI).then(m => m.connection);
   }
 
   try {
-    cached.conn = await cached.promise;
+    globalThis.mongooseConnection.conn = await globalThis.mongooseConnection.promise;
   } catch (e) {
-    cached.promise = null;
+    globalThis.mongooseConnection.promise = null;
     throw e;
   }
 
-  return cached.conn;
-} 
+  return globalThis.mongooseConnection.conn;
+}

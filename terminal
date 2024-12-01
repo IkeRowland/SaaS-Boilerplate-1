@@ -30,4 +30,13 @@ npm install date-fns # For date formatting
 npm install -D @types/react @types/react-dom @types/node
 npm install -D @tanstack/react-table @types/date-fns
 
+# Install Tremor and its dependencies
+npm install @tremor/react
+
+# Install missing dependencies
+npm install @clerk/nextjs@latest
+npm install mongoose @types/mongoose
+npm install zod
+npm install buffer
+
 npx create-next-app@latest saas-boilerplate --typescript --tailwind --app --src 

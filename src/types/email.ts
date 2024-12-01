@@ -1,18 +1,20 @@
-export interface EmailTemplate {
+import type { Buffer } from 'node:buffer';
+
+export type EmailTemplate = {
   id: string;
   name: string;
   subject: string;
   html: string;
   text: string;
-}
+};
 
-export interface EmailAttachment {
+export type EmailAttachment = {
   filename: string;
   data: Buffer | string;
   contentType?: string;
-}
+};
 
-export interface EmailOptions {
+export type EmailOptions = {
   to: string | string[];
   subject: string;
   html?: string;
@@ -22,4 +24,4 @@ export interface EmailOptions {
   attachments?: EmailAttachment[];
   from?: string;
   replyTo?: string;
-} 
+};

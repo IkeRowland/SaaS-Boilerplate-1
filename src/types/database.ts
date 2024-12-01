@@ -1,20 +1,19 @@
-import { Connection, Document } from 'mongoose';
+import type { Connection, Document } from 'mongoose';
 
-export interface DatabaseConnection {
+export type DatabaseConnection = {
   conn: Connection | null;
   promise: Promise<Connection> | null;
-}
+};
 
-export interface BaseDocument extends Document {
+export type BaseDocument = Document & {
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
-export interface UserDocument extends BaseDocument {
+export type UserDocument = BaseDocument & {
   email: string;
   name?: string;
   role: 'user' | 'admin';
-  subscriptionStatus: 'active' | 'inactive' | 'cancelled';
   subscriptionId?: string;
   customerId?: string;
-} 
+};

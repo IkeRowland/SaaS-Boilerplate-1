@@ -1,13 +1,14 @@
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard,
-  Users,
-  Settings,
   CreditCard,
   HelpCircle,
+  LayoutDashboard,
+  Settings,
+  Users,
 } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+import { cn } from '@/lib/utils';
 
 const sidebarNavItems = [
   {
@@ -50,14 +51,14 @@ export function SideNav() {
             href={item.href}
             className={cn(
               'group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground',
-              pathname === item.href ? 'bg-accent' : 'transparent'
+              pathname === item.href ? 'bg-accent' : 'transparent',
             )}
           >
-            <Icon className="mr-2 h-4 w-4" />
+            <Icon className="mr-2 size-4" />
             <span>{item.title}</span>
           </Link>
         );
       })}
     </nav>
   );
-} 
+}

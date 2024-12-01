@@ -1,12 +1,16 @@
+'use server';
+
+import { siteConfig } from '@/config/site';
 import { emailService } from '@/lib/email-service';
 
-export async function sendWelcomeEmail(user: { email: string; name: string }) {
+export async function sendWelcomeEmail(email: string, name: string) {
   return emailService.sendEmail({
-    to: user.email,
+    to: email,
+    subject: `Welcome to ${siteConfig.name}!`,
     template: 'welcome',
     templateVars: {
-      appName: 'Your SaaS',
-      name: user.name,
+      appName: siteConfig.name,
+      name,
     },
   });
-} 
+}

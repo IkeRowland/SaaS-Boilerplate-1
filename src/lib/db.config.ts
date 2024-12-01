@@ -1,15 +1,13 @@
-import { ConnectionOptions } from 'mongoose';
+import type { ConnectOptions } from 'mongoose';
 
-export const dbConfig: ConnectionOptions = {
+export const dbConfig: ConnectOptions = {
   bufferCommands: false,
-  autoIndex: true,
-  autoCreate: true,
 };
 
-export const getMongoUri = (): string => {
+export function getMongoUri(): string {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
     throw new Error('Please define the MONGODB_URI environment variable');
   }
   return uri;
-}; 
+}

@@ -1,11 +1,11 @@
 import { cn } from '@/lib/utils';
 
-interface DashboardCardProps extends React.HTMLAttributes<HTMLDivElement> {
+type DashboardCardProps = React.HTMLAttributes<HTMLDivElement> & {
   title: string;
   value: string | number;
   description?: string;
   icon?: React.ReactNode;
-}
+};
 
 export function DashboardCard({
   title,
@@ -19,7 +19,7 @@ export function DashboardCard({
     <div
       className={cn(
         'rounded-lg border bg-card p-6 text-card-foreground shadow',
-        className
+        className,
       )}
       {...props}
     >
@@ -35,4 +35,4 @@ export function DashboardCard({
       </div>
     </div>
   );
-} 
+}

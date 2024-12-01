@@ -1,10 +1,8 @@
-import { LemonSqueezy } from '@lemonsqueezy/lemonsqueezy.js';
+import { createClient } from '@lemonsqueezy/lemonsqueezy.js';
 
-if (!process.env.LEMON_SQUEEZY_API_KEY) {
-  throw new Error('LEMON_SQUEEZY_API_KEY is not set');
-}
-
-export const lemonSqueezy = new LemonSqueezy(process.env.LEMON_SQUEEZY_API_KEY);
+const client = createClient({
+  apiKey: process.env.LEMON_SQUEEZY_API_KEY!,
+});
 
 export async function createLemonCheckout({
   variantId,
@@ -19,17 +17,15 @@ export async function createLemonCheckout({
   successUrl: string;
   cancelUrl: string;
 }) {
-  const checkout = await lemonSqueezy.createCheckout({
+  const checkout = await client.createCheckout({
     variantId,
-    checkoutData: {
-      email,
-      custom: {
-        user_id: userId,
-      },
-      successUrl,
-      cancelUrl,
+    email,
+    customData: {
+      userId,
     },
+    successUrl,
+    cancelUrl,
   });
 
   return checkout;
-} 
+}
