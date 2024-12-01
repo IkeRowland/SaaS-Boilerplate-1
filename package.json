@@ -2,83 +2,15 @@
   "name": "saas-boilerplate",
   "version": "1.7.3",
   "scripts": {
-    "docker:build": "docker build -t saas-app .",
-    "docker:dev": "docker-compose up",
-    "docker:down": "docker-compose down",
-    "docker:prod": "docker-compose -f docker-compose.prod.yml up -d",
-    "docker:prod:down": "docker-compose -f docker-compose.prod.yml down",
-    "docker:prod:logs": "docker-compose -f docker-compose.prod.yml logs -f",
-    "docker:clean": "docker system prune -f",
     "dev:spotlight": "spotlight-sidecar",
     "dev:next": "next dev",
     "dev": "run-p dev:*",
     "build": "next build",
     "start": "next start",
-    "build-stats": "cross-env ANALYZE=true npm run build",
-    "clean": "rimraf .next out coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "check-types": "tsc --noEmit --pretty",
     "test": "vitest",
     "test:watch": "vitest watch",
-    "test:coverage": "vitest run --coverage",
-    "commit": "cz",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "dotenv -c production -- drizzle-kit migrate",
-    "db:studio": "dotenv -c production -- drizzle-kit studio",
-    "storybook": "storybook dev -p 6006",
-    "storybook:build": "storybook build",
-    "storybook:serve": "http-server storybook-static --port 6006 --silent",
-    "serve-storybook": "run-s storybook:*",
-    "test-storybook:ci": "start-server-and-test serve-storybook http://127.0.0.1:6006 test-storybook",
-    "prepare": "husky"
-  },
-  "dependencies": {
-    "@clerk/nextjs": "^5.0.0",
-    "@lemonsqueezy/lemonsqueezy.js": "^1.2.0",
-    "form-data": "^4.0.0",
-    "mailgun.js": "^10.2.1",
-    "mongoose": "^8.0.0",
-    "next": "^14.0.0",
-    "next-themes": "^0.2.1",
-    "stripe": "^14.0.0",
-    "zod": "^3.22.0"
-  },
-  "devDependencies": {
-    "@types/mongoose": "^5.11.97",
-    "@types/node": "^20.0.0",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
-    "@vitest/coverage-v8": "^1.0.0",
-    "vite-tsconfig-paths": "^4.2.0",
-    "vitest": "^1.0.0"
-  },
-  "config": {
-    "commitizen": {
-      "path": "@commitlint/cz-commitlint"
-    }
-  },
-  "release": {
-    "branches": [
-      "main"
-    ],
-    "plugins": [
-      [
-        "@semantic-release/commit-analyzer",
-        {
-          "preset": "conventionalcommits"
-        }
-      ],
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      [
-        "@semantic-release/npm",
-        {
-          "npmPublish": false
-        }
-      ],
-      "@semantic-release/git",
-      "@semantic-release/github"
-    ]
+    "test:coverage": "vitest run --coverage"
   }
 }

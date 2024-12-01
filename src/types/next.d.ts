@@ -5,15 +5,18 @@ declare module 'next/server' {
       pathname: string;
     };
     url: string;
-    json(): Promise<any>;
-    text(): Promise<string>;
+    json: () => Promise<any>;
+    text: () => Promise<string>;
+    headers: Headers;
+    method: string;
+    body: ReadableStream<Uint8Array> | null;
   };
 
-  export class NextResponse {
-    static json(
-      body: any,
+  export class NextResponse<T = any> {
+    static json<T>(
+      body: T,
       init?: ResponseInit,
-    ): NextResponse;
+    ): NextResponse<T>;
 
     static redirect(
       url: string | URL,
@@ -23,6 +26,9 @@ declare module 'next/server' {
     static next(
       init?: ResponseInit,
     ): NextResponse;
+
+    json: () => Promise<T>;
+    status: number;
   }
 
   export type { ResponseInit };

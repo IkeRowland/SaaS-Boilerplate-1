@@ -65,3 +65,42 @@ curl -X POST http://localhost:3000/api/webhooks/stripe \
 
 # Stop environment
 docker-compose down
+
+# Copy the example env file
+cp .env.example .env
+
+# Edit .env with your actual values
+nano .env
+
+# Install dependencies
+npm install
+
+# Install development dependencies
+npm install -D @types/mongoose @types/node @types/react @types/react-dom
+
+# Build the Docker images
+docker-compose build
+
+# Start the development environment
+docker-compose up -d
+
+# Check if services are running
+docker-compose ps
+
+# View logs
+docker-compose logs -f app
+
+# View application logs
+docker-compose logs -f app
+
+# View MongoDB logs
+docker-compose logs -f mongo
+
+# Check container health
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Health}}"
+
+# Stop the development environment
+docker-compose down
+
+# Clean up unused resources
+docker system prune -f
