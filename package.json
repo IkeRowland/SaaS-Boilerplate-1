@@ -19,8 +19,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "check-types": "tsc --noEmit --pretty",
-    "test": "vitest run",
-    "test:e2e": "playwright test",
+    "test": "vitest",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
     "commit": "cz",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "dotenv -c production -- drizzle-kit migrate",
@@ -47,7 +48,10 @@
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20.0.0",
     "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0"
+    "@types/react-dom": "^18.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "vite-tsconfig-paths": "^4.2.0",
+    "vitest": "^1.0.0"
   },
   "config": {
     "commitizen": {

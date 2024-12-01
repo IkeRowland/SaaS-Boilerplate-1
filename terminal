@@ -42,3 +42,26 @@ docker-compose -f docker-compose.prod.yml logs -f  # View production logs
 
 # Clean up Docker resources
 docker system prune -f  # Remove unused Docker resources
+
+# Start development environment
+docker-compose up -d
+
+# Check if services are running
+docker-compose ps
+
+# Check application logs
+docker-compose logs -f app
+
+# Test database connection
+curl http://localhost:3000/api/health
+
+# Test authentication
+curl http://localhost:3000/api/auth/status
+
+# Test webhooks
+curl -X POST http://localhost:3000/api/webhooks/stripe \
+  -H "Content-Type: application/json" \
+  -d '{"type":"test"}'
+
+# Stop environment
+docker-compose down

@@ -1,31 +1,44 @@
-import { createClient } from '@lemonsqueezy/lemonsqueezy.js';
+import { LemonSqueezy } from '@lemonsqueezy/lemonsqueezy.js';
 
-const client = createClient({
-  apiKey: process.env.LEMON_SQUEEZY_API_KEY!,
+if (!process.env.LEMON_SQUEEZY_API_KEY) {
+  throw new Error('LEMON_SQUEEZY_API_KEY is not set');
+}
+
+const client = new LemonSqueezy({
+  apiKey: process.env.LEMON_SQUEEZY_API_KEY,
+  storeId: process.env.LEMON_SQUEEZY_STORE_ID,
+  variantId: process.env.LEMON_SQUEEZY_VARIANT_ID,
 });
 
-export async function createLemonCheckout({
-  variantId,
-  email,
-  userId,
-  successUrl,
-  cancelUrl,
-}: {
-  variantId: string;
+export async function createCheckout(options: {
   email: string;
-  userId: string;
-  successUrl: string;
-  cancelUrl: string;
+  name?: string;
+  customData?: Record<string, unknown>;
+  successUrl?: string;
+  cancelUrl?: string;
 }) {
-  const checkout = await client.createCheckout({
-    variantId,
-    email,
-    customData: {
-      userId,
+  const { url } = await client.createCheckout({
+    variantId: process.env.LEMON_SQUEEZY_VARIANT_ID!,
+    checkoutData: {
+      email: options.email,
+      name: options.name,
+      custom: options.customData,
     },
-    successUrl,
-    cancelUrl,
   });
 
-  return checkout;
+  return url;
 }
+
+export async function getSubscription(subscriptionId: string) {
+  return client.getSubscription(subscriptionId);
+}
+
+export async function updateSubscription(subscriptionId: string, data: any) {
+  return client.updateSubscription(subscriptionId, data);
+}
+
+export async function cancelSubscription(subscriptionId: string) {
+  return client.cancelSubscription(subscriptionId);
+}
+
+export { client as lemonSqueezy };

@@ -1,22 +1,33 @@
-export type PaymentProvider = {
-  name: 'stripe' | 'lemonsqueezy' | 'paystack';
-  active: boolean;
-};
+export type PaymentProvider = 'stripe' | 'lemonsqueezy' | 'paystack';
 
 export type PriceInfo = {
   id: string;
-  name: string;
-  description?: string;
   amount: number;
   currency: string;
-  interval?: 'month' | 'year' | 'one-time';
-  provider: PaymentProvider['name'];
+  recurring?: {
+    interval: 'day' | 'week' | 'month' | 'year';
+    intervalCount?: number;
+  };
 };
 
-export type SubscriptionInfo = {
-  id: string;
-  status: 'active' | 'cancelled' | 'past_due' | 'incomplete';
-  currentPeriodEnd: Date;
+export type PaystackTransactionOptions = {
+  email: string;
+  amount: number;
+  userId: string;
+  metadata?: Record<string, unknown>;
+};
+
+export type StripeCheckoutOptions = {
   priceId: string;
-  provider: PaymentProvider['name'];
+  userId: string;
+  email: string;
+  successUrl: string;
+  cancelUrl: string;
+};
+
+export type LemonSqueezyCheckoutOptions = {
+  email: string;
+  customData?: Record<string, unknown>;
+  successUrl?: string;
+  cancelUrl?: string;
 };

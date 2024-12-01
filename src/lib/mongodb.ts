@@ -1,28 +1,30 @@
+import type { Connection } from 'mongoose';
 import mongoose from 'mongoose';
 
 import { dbConfig, getMongoUri } from './db.config';
 
 type DatabaseConnection = {
-  conn: mongoose.Connection | null;
-  promise: Promise<mongoose.Connection> | null;
+  conn: Connection | null;
+  promise: Promise<Connection> | null;
 };
 
-// Extend the globalThis interface instead of using declare global
+// Add mongoose to globalThis type
 declare global {
-  // eslint-disable-next-line no-var
-  var _mongooseConnection: DatabaseConnection | undefined;
+  type CustomGlobalThis = typeof globalThis & {
+    _mongooseConnection?: DatabaseConnection;
+  };
 }
 
 // Initialize the global connection object
-if (!globalThis._mongooseConnection) {
-  globalThis._mongooseConnection = {
+if (!(globalThis as CustomGlobalThis)._mongooseConnection) {
+  (globalThis as CustomGlobalThis)._mongooseConnection = {
     conn: null,
     promise: null,
   };
 }
 
-export async function connectToDatabase(): Promise<mongoose.Connection> {
-  const connection = globalThis._mongooseConnection!;
+export async function connectToDatabase(): Promise<Connection> {
+  const connection = (globalThis as CustomGlobalThis)._mongooseConnection!;
 
   // If we have a connection, return it
   if (connection.conn) {
