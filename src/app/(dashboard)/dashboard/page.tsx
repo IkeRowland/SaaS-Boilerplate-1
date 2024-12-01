@@ -1,14 +1,16 @@
-import { Activity, CreditCard, Users } from 'lucide-react';
-import { Suspense } from 'react';
+import { CreditCard, ShoppingCart, Users } from 'lucide-react';
 
 import { DashboardAreaChart } from '@/components/dashboard/area-chart';
+import { DashboardBarList } from '@/components/dashboard/bar-list';
 import { DashboardCard } from '@/components/dashboard/card';
 import { CustomersTable } from '@/components/dashboard/customers-table';
-import { StatsGrid } from '@/components/dashboard/stats-grid';
+import { DashboardDonutChart } from '@/components/dashboard/donut-chart';
+import { KPICard } from '@/components/dashboard/kpi-card';
+import { MetricsGrid } from '@/components/dashboard/metrics-grid';
 
-const stats = [
+const metrics = [
   {
-    title: 'Total Revenue',
+    title: 'Revenue',
     metric: '$12,699',
     delta: 12.3,
     deltaType: 'increase',
@@ -27,13 +29,26 @@ const stats = [
   },
 ];
 
-const chartData = [
-  {
-    date: 'Jan 22',
-    Revenue: 2890,
-    Customers: 2400,
-  },
-  // Add more data points...
+const kpiData = [
+  { date: '2023-01-01', value: 2890 },
+  { date: '2023-02-01', value: 2756 },
+  { date: '2023-03-01', value: 3322 },
+  { date: '2023-04-01', value: 3470 },
+  { date: '2023-05-01', value: 3475 },
+  { date: '2023-06-01', value: 3129 },
+];
+
+const donutData = [
+  { name: 'Basic', value: 345 },
+  { name: 'Pro', value: 891 },
+  { name: 'Enterprise', value: 252 },
+];
+
+const barListData = [
+  { name: 'Direct', value: 456 },
+  { name: 'Affiliate', value: 351 },
+  { name: 'Social', value: 271 },
+  { name: 'Email', value: 191 },
 ];
 
 const customers = [
@@ -55,48 +70,62 @@ export default function DashboardPage() {
         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
       </div>
 
-      <StatsGrid stats={stats} />
+      <MetricsGrid metrics={metrics} />
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Suspense fallback={<div>Loading...</div>}>
-          <DashboardCard
-            title="Total Customers"
-            value="2,543"
-            description="+20.1% from last month"
-            icon={<Users className="size-4" />}
-          />
-        </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
-          <DashboardCard
-            title="Revenue"
-            value="$45,231.89"
-            description="+15% from last month"
-            icon={<CreditCard className="size-4" />}
-          />
-        </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
-          <DashboardCard
-            title="Active Users"
-            value="1,234"
-            description="+49% from last month"
-            icon={<Activity className="size-4" />}
-          />
-        </Suspense>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <KPICard
+          title="Monthly Revenue"
+          metric="$12,699"
+          metricPrev="$9,456"
+          delta={12.3}
+          deltaType="increase"
+          data={kpiData}
+        />
+        <DashboardCard
+          title="Total Customers"
+          value="2,543"
+          description="+20.1% from last month"
+          icon={<Users className="size-4" />}
+        />
+        <DashboardCard
+          title="Active Subscriptions"
+          value="1,488"
+          description="+15% from last month"
+          icon={<CreditCard className="size-4" />}
+        />
+        <DashboardCard
+          title="Orders"
+          value="345"
+          description="+49% from last month"
+          icon={<ShoppingCart className="size-4" />}
+        />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         <DashboardAreaChart
-          data={chartData}
+          data={kpiData}
           index="date"
-          categories={['Revenue', 'Customers']}
-          title="Revenue & Customers"
-          subtitle="Monthly overview"
+          categories={['value']}
+          title="Revenue Trend"
+          subtitle="Monthly revenue"
+        />
+        <DashboardDonutChart
+          title="Subscriptions by Plan"
+          data={donutData}
+          valueFormatter={value => `${value} users`}
         />
       </div>
 
-      <div className="mt-6">
-        <h3 className="mb-4 text-xl font-semibold">Recent Customers</h3>
-        <CustomersTable data={customers} />
+      <div className="grid gap-6 md:grid-cols-2">
+        <DashboardBarList
+          title="Acquisition Channels"
+          data={barListData}
+          valueFormatter={value => `${value} users`}
+        />
+        <div className="space-y-6">
+          <h3 className="text-xl font-semibold">Recent Customers</h3>
+          <CustomersTable data={customers} />
+        </div>
       </div>
     </div>
   );

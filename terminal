@@ -26,4 +26,8 @@ npm install formdata-node mailgun.js
 npm install @tremor/react recharts @tanstack/react-table
 npm install date-fns # For date formatting
 
+# Install missing types
+npm install -D @types/react @types/react-dom @types/node
+npm install -D @tanstack/react-table @types/date-fns
+
 npx create-next-app@latest saas-boilerplate --typescript --tailwind --app --src 
