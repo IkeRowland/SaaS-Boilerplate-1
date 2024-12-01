@@ -2,15 +2,10 @@
   "name": "saas-boilerplate",
   "version": "1.7.3",
   "scripts": {
-    "dev:spotlight": "spotlight-sidecar",
-    "dev:next": "next dev",
-    "dev": "run-p dev:*",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "test": "vitest",
-    "test:watch": "vitest watch",
-    "test:coverage": "vitest run --coverage"
+    "test": "vitest"
   }
 }

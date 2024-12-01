@@ -29,26 +29,22 @@ declare namespace NodeJS {
     NEXT_PUBLIC_POSTHOG_KEY: string;
     NEXT_PUBLIC_POSTHOG_HOST: string;
     NEXT_PUBLIC_GA_MEASUREMENT_ID: string;
-
-    // Docker
-    DOCKER_MONGODB_PORT: string;
-    DOCKER_APP_PORT: string;
   };
 }
 
-// Add Buffer to global scope
 declare global {
-  // eslint-disable-next-line no-var
-  var Buffer: {
-    from(str: string, encoding?: string): Buffer;
-    alloc(size: number): Buffer;
-    isBuffer(obj: any): boolean;
-  } & { prototype: Buffer };
 
-  interface Buffer {
-    toString(encoding?: string): string;
+  let Buffer: {
+    from: (str: string, encoding?: string) => Buffer;
+    alloc: (size: number) => Buffer;
+    isBuffer: (obj: any) => boolean;
+    prototype: Buffer;
+  };
+
+  type Buffer = {
+    toString: (encoding?: string) => string;
     length: number;
-  }
+  };
 }
 
 export {};

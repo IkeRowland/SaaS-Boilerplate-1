@@ -1,29 +1,21 @@
-import formData from 'form-data';
-import Mailgun from 'mailgun.js';
-
+import { Resend } from 'resend';
+import { AppError, logError } from '@/utils/error-handling';
 import type { EmailOptions, EmailTemplate } from '@/types/email';
 
-import { defaultFromEmail, mailgunConfig, mailgunDomain } from './mailgun.config';
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-const mailgun = new Mailgun(formData);
-const mg = mailgun.client(mailgunConfig);
-
-type ProcessedTemplate = {
-  subject: string;
-  html: string;
-  text: string;
-};
+const defaultFromEmail = process.env.EMAIL_FROM || 'noreply@example.com';
 
 export class EmailService {
   private static instance: EmailService;
-  private templates: Map<string, EmailTemplate>;
+  private readonly templates: Map<string, EmailTemplate>;
 
   private constructor() {
     this.templates = new Map();
     this.initializeTemplates();
   }
 
-  private initializeTemplates() {
+  private initializeTemplates(): void {
     // Welcome email template
     this.templates.set('welcome', {
       id: 'welcome',
@@ -83,10 +75,15 @@ export class EmailService {
   private async processTemplate(
     templateId: string,
     vars: Record<string, unknown>,
-  ): Promise<ProcessedTemplate> {
+  ): Promise<{ subject: string; html: string; text: string }> {
     const template = this.templates.get(templateId);
     if (!template) {
-      throw new Error(`Template ${templateId} not found`);
+      throw new AppError(
+        `Template ${templateId} not found`,
+        'TEMPLATE_NOT_FOUND',
+        { templateId },
+        404
+      );
     }
 
     return {
@@ -121,16 +118,25 @@ export class EmailService {
         Object.assign(messageData, processed);
       }
 
-      await mg.messages.create(mailgunDomain, {
-        ...messageData,
-        from: messageData.from!,
-        attachments: options.attachments,
+      await resend.emails.send({
+        from: messageData.from,
+        to: messageData.to,
+        subject: messageData.subject,
+        html: messageData.html,
+        text: messageData.text,
       });
 
       return true;
     } catch (error) {
-      console.error('Failed to send email:', error);
-      return false;
+      logError('Failed to send email', {
+        error,
+        context: {
+          template: options.template,
+          to: options.to,
+          vars: options.templateVars,
+        },
+      });
+      throw error;
     }
   }
 }

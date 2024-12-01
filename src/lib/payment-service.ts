@@ -5,6 +5,7 @@ import type {
   PriceInfo,
   StripeCheckoutOptions,
 } from '@/types/payments';
+import { AppError, logError } from '@/utils/error-handling';
 
 import { createCheckout } from './lemonsqueezy';
 import { createPaystackTransaction } from './paystack';
@@ -25,41 +26,57 @@ export async function createPaymentSession({
   successUrl: string;
   cancelUrl: string;
 }) {
-  switch (provider) {
-    case 'stripe': {
-      const options: StripeCheckoutOptions = {
+  try {
+    switch (provider) {
+      case 'stripe': {
+        const options: StripeCheckoutOptions = {
+          priceId,
+          userId,
+          email,
+          successUrl,
+          cancelUrl,
+        };
+        return await createCheckoutSession(options);
+      }
+
+      case 'lemonsqueezy': {
+        const options: LemonSqueezyCheckoutOptions = {
+          email,
+          customData: { userId },
+          successUrl,
+          cancelUrl,
+        };
+        return await createCheckout(options);
+      }
+
+      case 'paystack': {
+        const priceInfo = getPriceInfo(provider, priceId);
+        const options: PaystackTransactionOptions = {
+          email,
+          amount: priceInfo.amount,
+          userId,
+          metadata: { priceId },
+        };
+        return await createPaystackTransaction(options);
+      }
+
+      default:
+        throw new AppError(
+          `Unsupported payment provider: ${provider}`,
+          'INVALID_PAYMENT_PROVIDER',
+          { provider },
+        );
+    }
+  } catch (error) {
+    logError(error, {
+      context: {
+        provider,
         priceId,
         userId,
         email,
-        successUrl,
-        cancelUrl,
-      };
-      return createCheckoutSession(options);
-    }
-
-    case 'lemonsqueezy': {
-      const options: LemonSqueezyCheckoutOptions = {
-        email,
-        customData: { userId },
-        successUrl,
-        cancelUrl,
-      };
-      return createCheckout(options);
-    }
-
-    case 'paystack': {
-      const priceInfo = getPriceInfo(provider, priceId);
-      const options: PaystackTransactionOptions = {
-        email,
-        amount: priceInfo.amount,
-        userId,
-        metadata: { priceId },
-      };
-      return createPaystackTransaction(options);
-    }
-
-    default:
-      throw new Error(`Unsupported payment provider: ${provider}`);
+      },
+    });
+    throw error;
   }
 }
 

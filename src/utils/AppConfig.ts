@@ -1,22 +1,20 @@
-import type { LocalePrefix } from 'node_modules/next-intl/dist/types/src/routing/types';
+import type { LocalePrefix } from 'next-intl/dist/types/src/routing/types';
 
 import { BILLING_INTERVAL, type PricingPlan } from '@/types/Subscription';
 
 const localePrefix: LocalePrefix = 'as-needed';
 
-// FIXME: Update this configuration file based on your project information
 export const AppConfig = {
-  name: 'SaaS Template',
+  name: 'SaaS Boilerplate',
+  description: 'Modern SaaS boilerplate with Next.js',
+  url: process.env.NEXT_PUBLIC_APP_URL,
   locales: [
-    {
-      id: 'en',
-      name: 'English',
-    },
+    { id: 'en', name: 'English' },
     { id: 'fr', name: 'Français' },
   ],
   defaultLocale: 'en',
   localePrefix,
-};
+} as const;
 
 export const AllLocales = AppConfig.locales.map(locale => locale.id);
 
@@ -26,7 +24,9 @@ export const PLAN_ID = {
   ENTERPRISE: 'enterprise',
 } as const;
 
-export const PricingPlanList: Record<string, PricingPlan> = {
+export type PlanId = typeof PLAN_ID[keyof typeof PLAN_ID];
+
+export const PricingPlanList: Record<PlanId, PricingPlan> = {
   [PLAN_ID.FREE]: {
     id: PLAN_ID.FREE,
     price: 0,
@@ -45,10 +45,9 @@ export const PricingPlanList: Record<string, PricingPlan> = {
     id: PLAN_ID.PREMIUM,
     price: 79,
     interval: BILLING_INTERVAL.MONTH,
-    testPriceId: 'price_premium_test', // Use for testing
-    // FIXME: Update the price ID, you can create it after running `npm run stripe:setup-price`
-    devPriceId: 'price_1PNksvKOp3DEwzQlGOXO7YBK',
-    prodPriceId: '',
+    testPriceId: 'price_premium_test',
+    devPriceId: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID || '',
+    prodPriceId: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PROD_PRICE_ID || '',
     features: {
       teamMember: 5,
       website: 5,
@@ -60,10 +59,9 @@ export const PricingPlanList: Record<string, PricingPlan> = {
     id: PLAN_ID.ENTERPRISE,
     price: 199,
     interval: BILLING_INTERVAL.MONTH,
-    testPriceId: 'price_enterprise_test', // Use for testing
-    // FIXME: Update the price ID, you can create it after running `npm run stripe:setup-price`
-    devPriceId: 'price_1PNksvKOp3DEwzQli9IvXzgb',
-    prodPriceId: 'price_123',
+    testPriceId: 'price_enterprise_test',
+    devPriceId: process.env.NEXT_PUBLIC_STRIPE_ENTERPRISE_PRICE_ID || '',
+    prodPriceId: process.env.NEXT_PUBLIC_STRIPE_ENTERPRISE_PROD_PRICE_ID || '',
     features: {
       teamMember: 100,
       website: 100,
@@ -71,4 +69,4 @@ export const PricingPlanList: Record<string, PricingPlan> = {
       transfer: 100,
     },
   },
-};
+} as const;

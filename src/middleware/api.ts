@@ -1,30 +1,28 @@
-import type { NextRequest, NextResponse } from 'next/server';
-import { ZodError } from 'zod';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
-import { errorResponse } from '@/lib/api-response';
+import { handleApiError, logError } from '@/utils/error-handling';
 
-export async function withErrorHandler(
+export async function withErrorHandling(
   req: NextRequest,
   handler: (req: NextRequest) => Promise<NextResponse>,
 ): Promise<NextResponse> {
   try {
     return await handler(req);
   } catch (error) {
-    console.error('API Error:', error);
-
-    if (error instanceof ZodError) {
-      return errorResponse(
-        'Validation error',
-        'VALIDATION_ERROR',
-        400,
-        error.errors,
-      );
-    }
-
-    if (error instanceof Error) {
-      return errorResponse(error.message);
-    }
-
-    return errorResponse('An unexpected error occurred');
+    logError('API Error:', { context: error });
+    return handleApiError(error);
   }
+}
+
+export async function withAuthentication(
+  req: NextRequest,
+  handler: (req: NextRequest) => Promise<NextResponse>,
+  session: unknown,
+): Promise<NextResponse> {
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  return withErrorHandling(req, handler);
 }

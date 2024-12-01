@@ -4,11 +4,11 @@ import { errorResponse, successResponse } from '@/lib/api-response';
 import { auth } from '@/lib/auth';
 import { connectToDatabase } from '@/lib/db';
 import { userSchema } from '@/lib/validations/api';
-import { withErrorHandler } from '@/middleware/api';
+import { withErrorHandling } from '@/middleware/api';
 import { User } from '@/models/User';
 
 export async function GET(req: NextRequest) {
-  return withErrorHandler(req, async () => {
+  return withErrorHandling(req, async () => {
     const { userId } = await auth();
     if (!userId) {
       return errorResponse('Unauthorized', 'UNAUTHORIZED', 401);
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  return withErrorHandler(req, async () => {
+  return withErrorHandling(req, async () => {
     const { userId, sessionClaims } = await auth();
     if (!userId || sessionClaims?.role !== 'admin') {
       return errorResponse('Unauthorized', 'UNAUTHORIZED', 401);

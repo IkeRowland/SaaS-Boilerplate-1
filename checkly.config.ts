@@ -1,47 +1,48 @@
 import { defineConfig } from 'checkly';
-import { EmailAlertChannel, Frequency } from 'checkly/constructs';
+import { RetryStrategyBuilder } from 'checkly/constructs';
 
-const sendDefaults = {
-  sendFailure: true,
-  sendRecovery: true,
-  sendDegraded: true,
-};
-
-// FIXME: Add your production URL
-const productionURL = 'https://react-saas.com';
-
-const emailChannel = new EmailAlertChannel('email-channel-1', {
-  // FIXME: add your own email address, Checkly will send you an email notification if a check fails
-  address: 'contact@creativedesignsguru.com',
-  ...sendDefaults,
+const retryStrategy = RetryStrategyBuilder.fixedStrategy({
+  baseBackoffSeconds: 60,
+  maxRetries: 3,
+  sameRegion: true,
 });
 
-export const config = defineConfig({
-  // FIXME: Add your own project name, logical ID, and repository URL
-  projectName: 'SaaS Boilerplate',
-  logicalId: 'saas-boilerplate',
-  repoUrl: 'https://github.com/ixartz/Next-js-Boilerplate',
+const config = defineConfig({
+  projectName: 'SaaS-Boilerplate',
+  logicalId: 'saas-boilerplate-monitoring',
+  repoUrl: 'https://github.com/your-org/saas-boilerplate',
   checks: {
     locations: ['us-east-1', 'eu-west-1'],
-    tags: ['website'],
-    runtimeId: '2024.02',
+    tags: ['website', 'api'],
+    runtimeId: '2023.09',
     browserChecks: {
+      retryStrategy,
       frequency: Frequency.EVERY_24H,
       testMatch: '**/tests/e2e/**/*.check.e2e.ts',
-      alertChannels: [emailChannel],
     },
-    playwrightConfig: {
-      use: {
-        baseURL: process.env.ENVIRONMENT_URL || productionURL,
-        extraHTTPHeaders: {
-          'x-vercel-protection-bypass': process.env.VERCEL_BYPASS_TOKEN,
-        },
-      },
+    apiChecks: {
+      retryStrategy,
     },
   },
   cli: {
     runLocation: 'eu-west-1',
     reporters: ['list'],
+  },
+  environmentVariables: {
+    ENVIRONMENT: 'production',
+    PRODUCTION_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://your-production-url.com',
+  },
+  alertChannels: {
+    email: [
+      {
+        address: process.env.ALERT_EMAIL_ADDRESS || 'alerts@your-domain.com',
+        sendDegraded: true,
+        sendFailure: true,
+        sendRecovery: true,
+        sslExpiry: true,
+        sslExpiryThreshold: 30,
+      },
+    ],
   },
 });
 
