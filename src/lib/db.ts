@@ -1,33 +1,39 @@
 import mongoose from 'mongoose';
 import { dbConfig, getMongoUri } from './db.config';
-import type { DatabaseConnection } from '@/types/database';
+
+type DatabaseConnection = {
+  mongoose: {
+    conn: mongoose.Connection | null;
+    promise: Promise<mongoose.Connection> | null;
+  };
+};
 
 declare global {
-  var mongoose: DatabaseConnection;
+  let mongooseConnection: DatabaseConnection['mongoose'];
 }
 
-if (!global.mongoose) {
-  global.mongoose = { conn: null, promise: null };
+if (!globalThis.mongooseConnection) {
+  globalThis.mongooseConnection = { conn: null, promise: null };
 }
 
-export async function connectToDatabase() {
-  if (global.mongoose.conn) {
-    return global.mongoose.conn;
+export async function connectToDatabase(): Promise<mongoose.Connection> {
+  if (globalThis.mongooseConnection.conn) {
+    return globalThis.mongooseConnection.conn;
   }
 
-  if (!global.mongoose.promise) {
+  if (!globalThis.mongooseConnection.promise) {
     const uri = getMongoUri();
-    global.mongoose.promise = mongoose.connect(uri, dbConfig).then((mongoose) => {
-      return mongoose.connection;
-    });
+    globalThis.mongooseConnection.promise = mongoose
+      .connect(uri, dbConfig)
+      .then(m => m.connection);
   }
 
   try {
-    global.mongoose.conn = await global.mongoose.promise;
+    globalThis.mongooseConnection.conn = await globalThis.mongooseConnection.promise;
   } catch (e) {
-    global.mongoose.promise = null;
+    globalThis.mongooseConnection.promise = null;
     throw e;
   }
 
-  return global.mongoose.conn;
+  return globalThis.mongooseConnection.conn;
 } 

@@ -1,37 +1,23 @@
-import mongoose, { Document, Model, Schema } from 'mongoose';
+import mongoose from 'mongoose';
 
-export interface IUser extends Document {
-  email: string;
-  name?: string;
-  role: 'user' | 'admin';
-  subscriptionStatus: 'active' | 'inactive' | 'cancelled';
-  subscriptionId?: string;
-  customerId?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import type { UserDocument } from '@/types/database';
 
-const UserSchema = new Schema<IUser>({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
+const userSchema = new mongoose.Schema<UserDocument>(
+  {
+    email: { type: String, required: true, unique: true },
+    name: { type: String },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+    },
+    subscriptionId: { type: String },
+    customerId: { type: String },
   },
-  name: String,
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user',
+  {
+    timestamps: true,
   },
-  subscriptionStatus: {
-    type: String,
-    enum: ['active', 'inactive', 'cancelled'],
-    default: 'inactive',
-  },
-  subscriptionId: String,
-  customerId: String,
-}, {
-  timestamps: true,
-});
+);
 
-export const User: Model<IUser> = mongoose.models.User || mongoose.model('User', UserSchema); 
+export const User = mongoose.models.User as mongoose.Model<UserDocument>
+  || mongoose.model<UserDocument>('User', userSchema);

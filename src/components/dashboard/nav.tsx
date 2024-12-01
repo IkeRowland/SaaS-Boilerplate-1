@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -12,8 +13,8 @@ const navItems = [
     href: '/dashboard/customers',
   },
   {
-    title: 'Products',
-    href: '/dashboard/products',
+    title: 'Billing',
+    href: '/dashboard/billing',
   },
   {
     title: 'Settings',
@@ -26,7 +27,7 @@ export function DashboardNav() {
 
   return (
     <nav className="flex items-center space-x-4 lg:space-x-6">
-      {navItems.map((item) => (
+      {navItems.map(item => (
         <Link
           key={item.href}
           href={item.href}
@@ -34,7 +35,7 @@ export function DashboardNav() {
             'text-sm font-medium transition-colors hover:text-primary',
             pathname === item.href
               ? 'text-primary'
-              : 'text-muted-foreground'
+              : 'text-muted-foreground',
           )}
         >
           {item.title}
@@ -42,4 +43,4 @@ export function DashboardNav() {
       ))}
     </nav>
   );
-} 
+}

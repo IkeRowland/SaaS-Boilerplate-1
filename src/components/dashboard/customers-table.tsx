@@ -22,7 +22,7 @@ const columns: ColumnDef<UserDocument>[] = [
     accessorKey: 'subscriptionStatus',
     header: 'Status',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('subscriptionStatus')}</div>
+      <div className="capitalize">{row.getValue('subscriptionStatus') || 'inactive'}</div>
     ),
   },
 ];

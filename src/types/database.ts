@@ -1,9 +1,4 @@
-import type { Connection, Document } from 'mongoose';
-
-export type DatabaseConnection = {
-  conn: Connection | null;
-  promise: Promise<Connection> | null;
-};
+import type { Document } from 'mongoose';
 
 export type BaseDocument = Document & {
   createdAt: Date;
@@ -16,4 +11,5 @@ export type UserDocument = BaseDocument & {
   role: 'user' | 'admin';
   subscriptionId?: string;
   customerId?: string;
+  subscriptionStatus?: 'active' | 'cancelled' | 'past_due';
 };

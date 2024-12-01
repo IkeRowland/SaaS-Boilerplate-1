@@ -1,42 +1,44 @@
+# Create Next.js app with TypeScript, Tailwind, and App Router
+npx create-next-app@latest saas-boilerplate --typescript --tailwind --app --src
+
 # Install core dependencies
-npm install mongoose @types/mongoose @types/node
-npm install @clerk/nextjs
-npm install @stripe/stripe-js stripe
-npm install mailgun.js form-data
-npm install @lemonsqueezy/lemonsqueezy.js
-npm install next-themes
-npm install @radix-ui/react-slot class-variance-authority clsx tailwind-merge
-npm install lucide-react
-npm install @radix-ui/react-dialog
-npm install @radix-ui/react-dropdown-menu
+npm install @clerk/nextjs@latest \
+           @lemonsqueezy/lemonsqueezy.js \
+           form-data \
+           mailgun.js \
+           mongoose \
+           next-themes \
+           stripe@latest \
+           zod
 
 # Install development dependencies
-npm install -D @types/node
+npm install -D @types/mongoose \
+             @types/node \
+             @types/react \
+             @types/react-dom
 
-# Install missing dependencies
-npm install @types/node --save-dev
-npm install stripe @types/stripe
-npm install @lemonsqueezy/lemonsqueezy.js
-npm install paystack-sdk
-npm install mongoose @types/mongoose
-npm install next @types/next
-npm install formdata-node mailgun.js
+# Install Docker (if not already installed)
+# For macOS:
+brew install docker docker-compose
 
-# Install chart and table dependencies
-npm install @tremor/react recharts @tanstack/react-table
-npm install date-fns # For date formatting
+# For Ubuntu:
+sudo apt-get update
+sudo apt-get install docker.io docker-compose
 
-# Install missing types
-npm install -D @types/react @types/react-dom @types/node
-npm install -D @tanstack/react-table @types/date-fns
+# Build and run Docker containers
+# Development
+docker-compose build  # Build images
+docker-compose up    # Start containers in development mode
+docker-compose down  # Stop containers
 
-# Install Tremor and its dependencies
-npm install @tremor/react
+# Production
+docker-compose -f docker-compose.prod.yml build  # Build production images
+docker-compose -f docker-compose.prod.yml up -d  # Start containers in production mode
+docker-compose -f docker-compose.prod.yml down   # Stop production containers
 
-# Install missing dependencies
-npm install @clerk/nextjs@latest
-npm install mongoose @types/mongoose
-npm install zod
-npm install buffer
+# View logs
+docker-compose logs -f            # View development logs
+docker-compose -f docker-compose.prod.yml logs -f  # View production logs
 
-npx create-next-app@latest saas-boilerplate --typescript --tailwind --app --src 
+# Clean up Docker resources
+docker system prune -f  # Remove unused Docker resources

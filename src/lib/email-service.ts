@@ -105,7 +105,7 @@ export class EmailService {
 
   public async sendEmail(options: EmailOptions): Promise<boolean> {
     try {
-      let messageData: EmailOptions = {
+      const messageData = {
         to: options.to,
         from: options.from || defaultFromEmail,
         subject: options.subject,
@@ -118,14 +118,12 @@ export class EmailService {
           options.template,
           options.templateVars || {},
         );
-        messageData = {
-          ...messageData,
-          ...processed,
-        };
+        Object.assign(messageData, processed);
       }
 
       await mg.messages.create(mailgunDomain, {
         ...messageData,
+        from: messageData.from!,
         attachments: options.attachments,
       });
 

@@ -1,4 +1,4 @@
-import type { Mailgun } from 'mailgun.js';
+import type Mailgun from 'mailgun.js';
 
 export const mailgunConfig = {
   username: 'api',

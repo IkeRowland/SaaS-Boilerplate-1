@@ -1,26 +1,39 @@
 import { NextResponse } from 'next/server';
+
 import { emailService } from '@/lib/email-service';
 
 export async function POST(req: Request) {
   try {
-    const { to, template, templateVars } = await req.json();
+    const body = await req.json();
+    const { to, template, templateVars } = body;
 
-    const sent = await emailService.sendEmail({
-      to,
-      template,
-      templateVars: {
-        appName: 'Your SaaS',
-        ...templateVars,
-      },
-    });
-
-    if (!sent) {
-      return new NextResponse('Failed to send email', { status: 500 });
+    if (!to || !template) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 },
+      );
     }
 
-    return new NextResponse('Email sent successfully', { status: 200 });
+    const success = await emailService.sendEmail({
+      to,
+      subject: 'Important Message',
+      template,
+      templateVars,
+    });
+
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Failed to send email' },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Email API error:', error);
-    return new NextResponse('Internal server error', { status: 500 });
+    console.error('Email error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
   }
-} 
+}

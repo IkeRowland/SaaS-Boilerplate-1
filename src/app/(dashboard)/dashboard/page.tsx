@@ -7,8 +7,16 @@ import { CustomersTable } from '@/components/dashboard/customers-table';
 import { DashboardDonutChart } from '@/components/dashboard/donut-chart';
 import { KPICard } from '@/components/dashboard/kpi-card';
 import { MetricsGrid } from '@/components/dashboard/metrics-grid';
+import type { UserDocument } from '@/types/database';
 
-const metrics = [
+type Metric = {
+  title: string;
+  metric: string;
+  delta: number;
+  deltaType: 'increase' | 'moderateIncrease' | 'decrease' | 'moderateDecrease';
+};
+
+const metrics: Metric[] = [
   {
     title: 'Revenue',
     metric: '$12,699',
@@ -23,8 +31,8 @@ const metrics = [
   },
   {
     title: 'Active Users',
-    metric: '1,234',
-    delta: -3.2,
+    metric: '1,235',
+    delta: -5.6,
     deltaType: 'decrease',
   },
 ];
@@ -51,14 +59,13 @@ const barListData = [
   { name: 'Email', value: 191 },
 ];
 
-const customers = [
+const customers: Partial<UserDocument>[] = [
   {
-    id: '1',
+    _id: '1',
     name: 'John Doe',
     email: 'john@example.com',
-    status: 'active',
-    plan: 'Pro',
-    joinedAt: new Date('2023-01-01'),
+    subscriptionStatus: 'active',
+    createdAt: new Date('2023-01-01'),
   },
   // Add more customers...
 ];

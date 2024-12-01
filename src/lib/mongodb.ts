@@ -1,36 +1,51 @@
-import type { Connection } from 'mongoose';
 import mongoose from 'mongoose';
 
+import { dbConfig, getMongoUri } from './db.config';
+
+type DatabaseConnection = {
+  conn: mongoose.Connection | null;
+  promise: Promise<mongoose.Connection> | null;
+};
+
+// Extend the globalThis interface instead of using declare global
 declare global {
-  let mongooseConnection: {
-    conn: Connection | null;
-    promise: Promise<Connection> | null;
+  // eslint-disable-next-line no-var
+  var _mongooseConnection: DatabaseConnection | undefined;
+}
+
+// Initialize the global connection object
+if (!globalThis._mongooseConnection) {
+  globalThis._mongooseConnection = {
+    conn: null,
+    promise: null,
   };
 }
 
-if (!globalThis.mongooseConnection) {
-  globalThis.mongooseConnection = { conn: null, promise: null };
-}
+export async function connectToDatabase(): Promise<mongoose.Connection> {
+  const connection = globalThis._mongooseConnection!;
 
-export async function connectToDatabase(): Promise<Connection> {
-  if (!process.env.MONGODB_URI) {
-    throw new Error('Please define the MONGODB_URI environment variable');
+  // If we have a connection, return it
+  if (connection.conn) {
+    return connection.conn;
   }
 
-  if (globalThis.mongooseConnection.conn) {
-    return globalThis.mongooseConnection.conn;
-  }
+  // If we don't have a promise to connect, create one
+  if (!connection.promise) {
+    const uri = getMongoUri();
 
-  if (!globalThis.mongooseConnection.promise) {
-    globalThis.mongooseConnection.promise = mongoose.connect(process.env.MONGODB_URI).then(m => m.connection);
+    connection.promise = mongoose
+      .connect(uri, dbConfig)
+      .then(m => m.connection);
   }
 
   try {
-    globalThis.mongooseConnection.conn = await globalThis.mongooseConnection.promise;
-  } catch (e) {
-    globalThis.mongooseConnection.promise = null;
-    throw e;
+    // Wait for the connection
+    connection.conn = await connection.promise;
+  } catch (error) {
+    // If connection fails, clear the promise so we can try again
+    connection.promise = null;
+    throw error;
   }
 
-  return globalThis.mongooseConnection.conn;
+  return connection.conn;
 }
